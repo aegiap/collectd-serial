@@ -1,6 +1,7 @@
-import collectd 
+import collectd
 import serial
 from os import sep
+
 
 class ArduinoSerial:
 
@@ -11,10 +12,9 @@ class ArduinoSerial:
         self.ser = None
         self.debug = False
         self.timeout = 1
-        self.plugin_instance = None 
+        self.plugin_instance = None
 
         self.set_plugin()
-
 
     def open(self):
         try:
@@ -22,9 +22,11 @@ class ArduinoSerial:
                 collectd.warning('ArduinoSerial: ' +
                     'trying to connect to %s with speed %s' %
                     (self.device, self.speed))
-            self.ser = serial.Serial(self.device, self.speed, timeout=self.timeout)
+            self.ser = serial.Serial(self.device,
+                                     self.speed,
+                                     timeout=self.timeout)
         except:
-            collectd.warning('ArduinoSerial: ' + 
+            collectd.warning('ArduinoSerial: ' +
                 'error on the serial device %s with the speed %d' %
                 (self.device, self.speed))
 
@@ -34,11 +36,9 @@ class ArduinoSerial:
         self.ser.nonblocking()
         collectd.info('ArduinoSerial: serial connection is ok')
 
-
     def set_plugin(self):
         path_elements = self.device.split(sep)
         self.plugin_instance = path_elements[-1]
-
 
     def submit(self, datatype, instance, value):
         """
@@ -51,11 +51,10 @@ class ArduinoSerial:
         cvalue.type_instance = instance
         cvalue.values = [value, ]
         cvalue.dispatch()
- 
+
         if self.debug:
             collectd.warning('ArduinoSerial: data dispatched: %s %.1f' %
                 (datatype, value))
- 
 
     def get_value(self):
         """
@@ -70,7 +69,7 @@ class ArduinoSerial:
         while 1:
             reading = self.ser.readline().strip().split(' ')
 
-            #if self.debug: 
+            #if self.debug:
             #     collectd.warning('ArduinoSerial: ' +
             #         'debug) received line with %d elements' %
             #         len(reading))
@@ -84,7 +83,7 @@ class ArduinoSerial:
 
         if self.ser.isOpen():
             self.ser.close()
-    
+
     def config(self, obj):
         """
         Get the configuration from collectd
